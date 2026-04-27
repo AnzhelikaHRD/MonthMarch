@@ -407,7 +407,57 @@ body {
 </style>
 </head>
 <body>
-<div class="stage-wrapper">
+
+<!-- ══════════ PASSWORD SCREEN ══════════ -->
+<div id="lockScreen" style="
+  position:fixed;inset:0;z-index:9999;
+  background:#060d1a;
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Montserrat',sans-serif;">
+  <div style="width:360px;text-align:center;">
+    <div style="width:48px;height:48px;background:#FFD300;border-radius:10px;
+                display:flex;align-items:center;justify-content:center;
+                font-size:22px;font-weight:900;color:#060d1a;
+                margin:0 auto 24px;">K</div>
+    <div style="font-size:11px;font-weight:700;letter-spacing:3px;
+                text-transform:uppercase;color:rgba(255,255,255,0.35);
+                margin-bottom:8px;">KEVIN School</div>
+    <div style="font-size:20px;font-weight:700;color:#fff;margin-bottom:28px;">
+      Введіть пароль
+    </div>
+    <div style="position:relative;">
+      <input id="passInput" type="password" placeholder="••••••••••••"
+        style="width:100%;padding:14px 48px 14px 18px;
+               background:rgba(255,255,255,0.06);
+               border:1px solid rgba(255,255,255,0.12);
+               border-radius:10px;color:#fff;font-size:15px;
+               font-family:'Montserrat',sans-serif;outline:none;
+               transition:border-color 0.2s;"
+        onfocus="this.style.borderColor='rgba(255,211,0,0.5)'"
+        onblur="this.style.borderColor='rgba(255,255,255,0.12)'"
+        onkeydown="if(event.key==='Enter')checkPassword()">
+      <span onclick="togglePass()" style="
+        position:absolute;right:14px;top:50%;transform:translateY(-50%);
+        cursor:pointer;font-size:16px;color:rgba(255,255,255,0.3);
+        user-select:none;" title="Показати/приховати">👁</span>
+    </div>
+    <div id="passError" style="
+      height:20px;margin-top:8px;font-size:12px;
+      color:#ff7070;font-weight:500;"></div>
+    <button onclick="checkPassword()" style="
+      margin-top:12px;width:100%;padding:14px;
+      background:#FFD300;border:none;border-radius:10px;
+      font-family:'Montserrat',sans-serif;font-size:14px;
+      font-weight:700;color:#060d1a;cursor:pointer;
+      transition:opacity 0.2s;"
+      onmouseenter="this.style.opacity='0.88'"
+      onmouseleave="this.style.opacity='1'">
+      Увійти →
+    </button>
+  </div>
+</div>
+
+<div class="stage-wrapper" id="mainApp" style="display:none;">
 <div class="stage" id="stage">
 
   <div class="bg"></div>
@@ -875,6 +925,31 @@ body {
 </div><!-- /stage-wrapper -->
 
 <script>
+// ── Password gate ──
+function checkPassword() {
+  const input = document.getElementById('passInput').value;
+  const ok = [72,114,107,69,118,105,110,52,56,55,54,56,54,52,42,106,106,103,104];
+  const valid = input.length === ok.length && [...input].every((c,i) => c.charCodeAt(0) === ok[i]);
+  if (valid) {
+    document.getElementById('lockScreen').style.display = 'none';
+    document.getElementById('mainApp').style.display = 'flex';
+  } else {
+    const err = document.getElementById('passError');
+    err.textContent = 'Невірний пароль. Спробуйте ще раз.';
+    const inp = document.getElementById('passInput');
+    inp.style.borderColor = 'rgba(255,80,80,0.6)';
+    inp.value = '';
+    setTimeout(() => {
+      err.textContent = '';
+      inp.style.borderColor = 'rgba(255,255,255,0.12)';
+    }, 2500);
+  }
+}
+function togglePass() {
+  const inp = document.getElementById('passInput');
+  inp.type = inp.type === 'password' ? 'text' : 'password';
+}
+
 (function() {
   const TOTAL = 9;
   let current = 0;
